@@ -27,7 +27,7 @@ workflows:
           filters:
             branches:
               ignore:
-                - main
+                - master
 
 orbs:
   diffy: diffy/diffy@0.0.2
