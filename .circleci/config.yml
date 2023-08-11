@@ -49,12 +49,6 @@ jobs:
             sudo chown docker: /var/www
 
       - checkout
-  // run jobs to install composer and compile theme
+    # Steps to build the theme ar whatever needed before deployment.
 
-- persist_to_workspace:
-    root: .
-    paths:
-      - web
-      - vendor
-      - web/themes/custom/lyndon/lyndon_build
-diffy: diffy/compare_multidev_dev
+  diffy: diffy/compare_multidev_dev
