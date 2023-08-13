@@ -24,7 +24,16 @@ workflows:
             - pantheon/push
           context:
             - drupal
-      - diffy:
+#      - diffy:
+#          requires:
+#            - afterbuild
+#          context:
+#            - drupal
+#          filters:
+#            branches:
+#              ignore:
+#                - master
+      - diffy_manual:
           requires:
             - afterbuild
           context:
@@ -72,3 +81,38 @@ jobs:
 #            terminus remote:drush "$TERMINUS_FULL_SITE" cr
 
   diffy: diffy/compare_multidev_dev
+
+  diffy_manual:
+    docker:
+      - image: cimg/php:8.1.21
+    steps:
+      - run:
+          name: Run compare job and post a github comment
+          command: |
+            if [ -z "$DIFFY_API_KEY" ]
+            then
+              echo "Diffy integration is not configured. Add DIFFY_API_KEY to CircleCI variables."
+              exit 1;
+            fi
+            if [ -z "$DIFFY_PROJECT_ID" ]
+            then
+              echo "Diffy integration is not configured. Add DIFFY_PROJECT_ID to CircleCI variables."
+              exit 1;
+            fi
+
+            # Ping the multidev environment to wake it from sleep
+            echo -e "\nPinging the ${TERMINUS_ENV} multidev environment to wake it from sleep..."
+            curl -I "$MULTIDEV_SITE_URL" >/dev/null
+            # Ping the live environment to wake it from sleep
+            echo -e "\nPinging the dev environment to wake it from sleep..."
+            curl -I "$DEV_SITE_URL" >/dev/null
+
+            # Download Diffy-CLI.
+            wget https://github.com/diffywebsite/diffy-cli/releases/latest/download/diffy.phar
+
+            // Authenticate.
+            php diffy.phar auth:login $DIFFY_API_KEY
+
+            // Compare with commit sha so Diffy's github check posts the results.
+            LAST_GIT_COMMIT_HASH=$(git log -1 --pretty=%H)
+            php diffy.phar project:compare $DIFFY_PROJECT_ID dev custom --env2Url="${MULTIDEV_SITE_URL}" --commit-sha="${LAST_GIT_COMMIT_HASH}"
