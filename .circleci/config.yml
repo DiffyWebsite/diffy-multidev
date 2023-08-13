@@ -116,7 +116,7 @@ jobs:
             # Download Diffy-CLI.
             wget https://github.com/diffywebsite/diffy-cli/releases/latest/download/diffy.phar
 
-            // Authenticate.
+            # Authenticate.
             php diffy.phar auth:login $DIFFY_API_KEY
 
             // Compare with commit sha so Diffy's github check posts the results.
