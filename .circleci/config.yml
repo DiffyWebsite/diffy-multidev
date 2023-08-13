@@ -65,10 +65,10 @@ jobs:
           name: Run config import and cache clear on multidev env
           command: |
             /build-tools-ci/scripts/set-environment
-            terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
-            TERMINUS_FULL_SITE="$TERMINUS_SITE.$TERMINUS_ENV"
-            echo "$TERMINUS_FULL_SITE"
-            terminus remote:drush "$TERMINUS_FULL_SITE" config:import -y
-            terminus remote:drush "$TERMINUS_FULL_SITE" cr
+#            terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
+#            TERMINUS_FULL_SITE="$TERMINUS_SITE.$TERMINUS_ENV"
+#            echo "$TERMINUS_FULL_SITE"
+#            terminus remote:drush "$TERMINUS_FULL_SITE" config:import -y
+#            terminus remote:drush "$TERMINUS_FULL_SITE" cr
 
   diffy: diffy/compare_multidev_dev
