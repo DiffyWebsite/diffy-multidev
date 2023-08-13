@@ -19,9 +19,14 @@ workflows:
             - checkout
             - attach_workspace:
                 at: .
-      - diffy:
+      - afterbuild:
           requires:
             - pantheon/push
+          context:
+            - drupal
+      - diffy:
+          requires:
+            - afterbuild
           context:
             - drupal
           filters:
@@ -50,5 +55,16 @@ jobs:
 
       - checkout
     # Steps to build the theme ar whatever needed before deployment.
+  afterbuild:
+    docker:
+      - image: quay.io/pantheon-public/build-tools-ci:6.x
+    # resource_class: xlarge
+    working_directory: /var/www
+    steps:
+      - run:
+          name: Run config import and cache clear on multidev env
+          command: |
+            terminus remote:drush $TERMINUS_SITE.$TERMINUS_ENV config:import -y
+            terminus remote:drush $TERMINUS_SITE.$TERMINUS_ENV cr
 
   diffy: diffy/compare_multidev_dev
