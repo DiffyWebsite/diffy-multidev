@@ -24,16 +24,7 @@ workflows:
             - pantheon/push
           context:
             - drupal
-#      - diffy_orb:
-#          requires:
-#            - afterbuild
-#          context:
-#            - drupal
-#          filters:
-#            branches:
-#              ignore:
-#                - master
-      - diffy_manual:
+      - diffy_orb:
           requires:
             - afterbuild
           context:
@@ -42,6 +33,15 @@ workflows:
             branches:
               ignore:
                 - master
+#      - diffy_manual:
+#          requires:
+#            - afterbuild
+#          context:
+#            - drupal
+#          filters:
+#            branches:
+#              ignore:
+#                - master
 
 orbs:
   diffy_orb: diffy/diffy@0.0.5
