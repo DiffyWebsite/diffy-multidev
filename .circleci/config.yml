@@ -35,7 +35,7 @@ workflows:
                 - master
 
 orbs:
-  diffy: diffy/diffy@0.0.3
+  diffy: diffy/diffy@0.0.4
   # Pantheon Orb source and README: https://github.com/pantheon-systems/circleci-orb
   # More Pantehon Orb Docs https://circleci.com/developer/orbs/orb/pantheon-systems/pantheon
   pantheon: pantheon-systems/pantheon@0.6.0
