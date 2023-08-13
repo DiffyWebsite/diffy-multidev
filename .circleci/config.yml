@@ -24,7 +24,7 @@ workflows:
             - pantheon/push
           context:
             - drupal
-#      - diffy:
+#      - diffy_orb:
 #          requires:
 #            - afterbuild
 #          context:
@@ -44,7 +44,7 @@ workflows:
                 - master
 
 orbs:
-  diffy: diffy/diffy@0.0.4
+  diffy_orb: diffy/diffy@0.0.5
   # Pantheon Orb source and README: https://github.com/pantheon-systems/circleci-orb
   # More Pantehon Orb Docs https://circleci.com/developer/orbs/orb/pantheon-systems/pantheon
   pantheon: pantheon-systems/pantheon@0.6.0
@@ -66,7 +66,7 @@ jobs:
     # Steps to build the theme ar whatever needed before deployment.
   afterbuild:
     docker:
-      - image: pantheon-systems/pantheon@0.6.0
+      - image: quay.io/pantheon-public/build-tools-ci:6.x
     steps:
       - checkout
       - attach_workspace:
@@ -83,7 +83,7 @@ jobs:
             terminus remote:drush "$TERMINUS_FULL_SITE" config:import -y
             terminus remote:drush "$TERMINUS_FULL_SITE" cr
 
-  diffy: diffy/compare_multidev_dev
+  diffy_orb: diffy/compare_multidev_dev
 
   diffy_manual:
     docker:
