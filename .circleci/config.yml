@@ -64,6 +64,7 @@ jobs:
       - run:
           name: Run config import and cache clear on multidev env
           command: |
+            terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
             terminus remote:drush $TERMINUS_SITE.$TERMINUS_ENV config:import -y
             terminus remote:drush $TERMINUS_SITE.$TERMINUS_ENV cr
 
