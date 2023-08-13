@@ -66,8 +66,7 @@ jobs:
           command: |
             /build-tools-ci/scripts/set-environment
             terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
-            echo "$TERMINUS_SITE.$TERMINUS_ENV"
-            terminus remote:drush "$TERMINUS_SITE.$TERMINUS_ENV" config:import -y
-            terminus remote:drush "$TERMINUS_SITE.$TERMINUS_ENV" cr
+            terminus remote:drush "$TERMINUS_SITE"."$TERMINUS_ENV" config:import -y
+            terminus remote:drush "$TERMINUS_SITE"."$TERMINUS_ENV" cr
 
   diffy: diffy/compare_multidev_dev
