@@ -28,7 +28,7 @@ jobs:
           PR_BRANCH="pr-$pr_number"
           git remote add pantheon $pantheon_repo
           git fetch pantheon
-          git push pantheon $PR_BRANCH
+          git push --force pantheon HEAD:refs/heads/$PR_BRANCH
           terminus multidev:create $pantheon_site_name.live $PR_BRANCH
       - name: Cache rebuild, import configuration
         env:
