@@ -3,12 +3,7 @@ workflows:
   version: 2
   build_and_push:
     jobs:
-      - build:
-          context:
-            - drupal
       - pantheon/push:
-          requires:
-            - build
           context:
             - drupal
           checkout: false
@@ -49,21 +44,6 @@ orbs:
   # More Pantehon Orb Docs https://circleci.com/developer/orbs/orb/pantheon-systems/pantheon
   pantheon: pantheon-systems/pantheon@0.6.0
 jobs:
-  build:
-    docker:
-      - image: docksal/cli:2.11-php7.4
-        user: docker
-    # resource_class: xlarge
-    working_directory: /var/www
-    steps:
-      - run:
-          name: Prepare /var/www for Docksal image environment
-          command: |
-            sudo rmdir html
-            sudo chown docker: /var/www
-
-      - checkout
-    # Steps to build the theme ar whatever needed before deployment.
   afterbuild:
     docker:
       - image: quay.io/pantheon-public/build-tools-ci:6.x
