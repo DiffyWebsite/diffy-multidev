@@ -26,8 +26,7 @@ jobs:
         run: |
           BASE_BRANCH=${GITHUB_REF##*/}
           git remote add pantheon $pantheon_repo
-          git push pantheon HEAD:master
-          commit_hash=$(git log -1 --pretty=%H)
+          git push pantheon $BASE_BRANCH
           terminus multidev:create $pantheon_site_name.live $BASE_BRANCH
       - name: Cache rebuild, import configuration
         env:
