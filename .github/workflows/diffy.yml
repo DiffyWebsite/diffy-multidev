@@ -46,7 +46,7 @@ jobs:
           pr_number: ${{ github.event.number }}
         run: |
           PR_BRANCH="pr-$pr_number"
-          MULTIDEV_SITE_URL='https://$PR_BRANCH-$pantheon_site_name.pantheonsite.io/'
+          MULTIDEV_SITE_URL="https://$PR_BRANCH-$pantheon_site_name.pantheonsite.io/"
           # Download Diffy-CLI.
           wget https://github.com/diffywebsite/diffy-cli/releases/latest/download/diffy.phar
 
