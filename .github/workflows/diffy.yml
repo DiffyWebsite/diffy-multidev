@@ -98,6 +98,8 @@ jobs:
           # Authenticate.
           php diffy.phar auth:login $diffy_api_key
 
+          echo $GITHUB_SHA
+
           # Compare with commit sha so Diffy's github check posts the results. 
           php diffy.phar project:compare $diffy_project_id dev custom --env2Url="${MULTIDEV_SITE_URL}" --commit-sha="${GITHUB_SHA}"
 
