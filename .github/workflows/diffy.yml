@@ -73,6 +73,7 @@ jobs:
               done
             fi
           fi
+          echo "Creating multidev ${PR_BRANCH}"
           terminus multidev:create $pantheon_site_name.live $PR_BRANCH
 
       - name: Cache rebuild, import configuration
