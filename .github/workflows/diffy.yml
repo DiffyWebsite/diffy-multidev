@@ -32,7 +32,7 @@ jobs:
           
           # Check if current branch environment exists. If so -- delete it first.
           MULTIDEV_EXISTS=$(terminus env:list "${pantheon_site_name}" --format=list | grep "${PR_BRANCH}" | wc -l)
-          if [[ "${MULTIDEV_EXISTS}" -ge 0 ]]; then
+          if (( "${MULTIDEV_EXISTS}" > 0 )); then
             terminus multidev:delete "${pantheon_site_name}"."${PR_BRANCH}" --yes
           else
             # Check if we allowed to create new multidev and if not -- delete old ones.
@@ -50,29 +50,30 @@ jobs:
             # remove whitespace to make the arithmetic work
             CDE_COUNT="${CDE_COUNT//[[:blank:]]/}"
           
+            NUMBER_OF_CDES_REQUIRED=1
             echo "There are currently ${CDE_COUNT}/${MAX_CDE_COUNT} multidevs. I need ${NUMBER_OF_CDES_REQUIRED}."
   
             POTENTIAL_CDE_COUNT=$((CDE_COUNT + NUMBER_OF_CDES_REQUIRED))
-            if [[ "${POTENTIAL_CDE_COUNT}" -le "${MAX_CDE_COUNT}" ]]; then
+            if (( "${POTENTIAL_CDE_COUNT}" <= "${MAX_CDE_COUNT}" )); then
               echo "There are enough multidevs."
-              exit
+            else
+              NUMBER_OF_CDES_TO_DELETE=$((POTENTIAL_CDE_COUNT - MAX_CDE_COUNT))
+              echo "There are not enough multidevs, deleting the oldest ${NUMBER_OF_CDES_TO_DELETE} environment(s)."
+            
+              # Filter out any multidev environments that should never be deleted.
+              # This is seperate from filtering out dev/test/live above as they still count towards 'Max Multidev'.
+              # Then, sort the list by the timestamps
+              SORTED_DOMAINS=$(echo "$CDE_DOMAINS" | grep -vE '\b(drupal10)\b' | sort -n -k2)
+            
+              # Delete as many multidevs as we need to make room for testing.
+              for (( i = 1; i<=NUMBER_OF_CDES_TO_DELETE; i++ )); do
+                ENV_TO_REMOVE="$(echo "$SORTED_DOMAINS" | head -n "$i" | tail -n 1 | cut -f1)"
+                echo "Removing '${ENV_TO_REMOVE}'."
+                terminus multidev:delete --delete-branch "${pantheon_site_name}.${ENV_TO_REMOVE}" --yes
+              done
             fi
-            
-            NUMBER_OF_CDES_TO_DELETE=$((POTENTIAL_CDE_COUNT - MAX_CDE_COUNT))
-            echo "There are not enough multidevs, deleting the oldest ${NUMBER_OF_CDES_TO_DELETE} environment(s)."
-            
-            # Filter out any multidev environments that should never be deleted.
-            # This is seperate from filtering out dev/test/live above as they still count towards 'Max Multidev'.
-            # Then, sort the list by the timestamps
-            SORTED_DOMAINS=$(echo "$CDE_DOMAINS" | grep -vE '\b(drupal10)\b' | sort -n -k2)
-            
-            # Delete as many multidevs as we need to make room for testing.
-            for (( i = 1; i<=NUMBER_OF_CDES_TO_DELETE; i++ )); do
-              ENV_TO_REMOVE="$(echo "$SORTED_DOMAINS" | head -n "$i" | tail -n 1 | cut -f1)"
-              echo "Removing '${ENV_TO_REMOVE}'."
-              terminus multidev:delete --delete-branch "${pantheon_site_name}.${ENV_TO_REMOVE}" --yes
-            done
           fi
+          echo "Creating multidev ${PR_BRANCH}"
           terminus multidev:create $pantheon_site_name.live $PR_BRANCH
 
       - name: Cache rebuild, import configuration
