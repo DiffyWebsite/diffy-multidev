@@ -33,7 +33,7 @@ jobs:
           # Check if current branch environment exists. If so -- delete it first.
           MULTIDEV_EXISTS=$(terminus env:list "${pantheon_site_name}" --format=list | grep "${PR_BRANCH}" | wc -l)
           if [[ "${MULTIDEV_EXISTS}" -ge 0 ]]; then
-            terminus multidev:delete "${pantheon_site_name}"."${PR_BRANCH}"
+            terminus multidev:delete "${pantheon_site_name}"."${PR_BRANCH}" --yes
           else
             # Check if we allowed to create new multidev and if not -- delete old ones.
             # See https://github.com/pantheon-systems/pantheon_advanced_page_cache/blob/2.x/.circleci/scripts/ensure-available-multidev.sh
@@ -54,8 +54,8 @@ jobs:
   
             POTENTIAL_CDE_COUNT=$((CDE_COUNT + NUMBER_OF_CDES_REQUIRED))
             if [[ "${POTENTIAL_CDE_COUNT}" -le "${MAX_CDE_COUNT}" ]]; then
-            echo "There are enough multidevs."
-            exit
+              echo "There are enough multidevs."
+              exit
             fi
             
             NUMBER_OF_CDES_TO_DELETE=$((POTENTIAL_CDE_COUNT - MAX_CDE_COUNT))
@@ -72,9 +72,8 @@ jobs:
               echo "Removing '${ENV_TO_REMOVE}'."
               terminus multidev:delete --delete-branch "${pantheon_site_name}.${ENV_TO_REMOVE}" --yes
             done
-            
-            terminus multidev:create $pantheon_site_name.live $PR_BRANCH
           fi
+          terminus multidev:create $pantheon_site_name.live $PR_BRANCH
 
       - name: Cache rebuild, import configuration
         env:
@@ -101,5 +100,6 @@ jobs:
 
           # Compare with commit sha so Diffy's github check posts the results. 
           LAST_GIT_COMMIT_HASH=$(git log -1 --pretty=%H)
+          echo "Commit sha ${LAST_GIT_COMMIT_HASH}"
           php diffy.phar project:compare $diffy_project_id dev custom --env2Url="${MULTIDEV_SITE_URL}" --commit-sha="${LAST_GIT_COMMIT_HASH}"
 
