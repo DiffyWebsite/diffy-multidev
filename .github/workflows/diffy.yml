@@ -32,6 +32,7 @@ jobs:
           
           # Check if current branch environment exists. If so -- delete it first.
           MULTIDEV_EXISTS=$(terminus env:list "${pantheon_site_name}" --format=list | grep "${PR_BRANCH}" | wc -l)
+          echo "${MULTIDEV_EXISTS}"
           if [[ "${MULTIDEV_EXISTS}" -ge 0 ]]; then
             terminus multidev:delete "${pantheon_site_name}"."${PR_BRANCH}" --yes
           else
