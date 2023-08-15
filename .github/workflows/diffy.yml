@@ -50,6 +50,7 @@ jobs:
             # remove whitespace to make the arithmetic work
             CDE_COUNT="${CDE_COUNT//[[:blank:]]/}"
           
+            NUMBER_OF_CDES_REQUIRED=1
             echo "There are currently ${CDE_COUNT}/${MAX_CDE_COUNT} multidevs. I need ${NUMBER_OF_CDES_REQUIRED}."
   
             POTENTIAL_CDE_COUNT=$((CDE_COUNT + NUMBER_OF_CDES_REQUIRED))
