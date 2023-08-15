@@ -25,6 +25,8 @@ jobs:
           pantheon_site_name: '${{ secrets.PANTHEON_SITE_NAME }}'
           pr_number: ${{ github.event.number }}
         run: |
+          LAST_GIT_COMMIT_HASH=$(git log -1 --pretty=%H)
+          echo "Commit sha ${LAST_GIT_COMMIT_HASH}"
           PR_BRANCH="pr-$pr_number"
           git remote add pantheon $pantheon_repo
           git fetch pantheon
